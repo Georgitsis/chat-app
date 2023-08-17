@@ -19,7 +19,6 @@ const Screen1 = ({ navigation }) => {
     "#B9C6AE",
   ]);
   const [backgroundColorChoice, setBackgroundColorChoice] = useState("");
-
   return (
     <ImageBackground
       source={require("../assets/img/backgroundImage.png")} // Replace with your image source
