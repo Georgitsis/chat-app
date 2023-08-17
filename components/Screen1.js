@@ -6,6 +6,7 @@ import {
   TextInput,
   ImageBackground,
   TouchableOpacity,
+  KeyboardAvoidingView,
 } from "react-native";
 import { useState, useEffect } from "react";
 
@@ -58,6 +59,9 @@ const Screen1 = ({ navigation }) => {
           >
             <Text style={styles.buttonText}>Start Chatting</Text>
           </TouchableOpacity>
+          {Platform.OS === "ios" ? (
+            <KeyboardAvoidingView behavior="padding" />
+          ) : null}
         </View>
       </View>
     </ImageBackground>
@@ -77,6 +81,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#FFFFFF",
     height: "44%",
+    minHeight: 300,
     width: "88%",
     borderColor: "#000",
     padding: "6%",
