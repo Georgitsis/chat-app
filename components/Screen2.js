@@ -1,5 +1,6 @@
 import { StyleSheet, View, Text } from "react-native";
 import { useEffect } from "react";
+import Chat from "./Chat";
 
 const Screen2 = ({ route, navigation }) => {
   const { name } = route.params;
@@ -11,7 +12,7 @@ const Screen2 = ({ route, navigation }) => {
 
   return (
     <View style={[styles.container, { backgroundColor: backgroundColor }]}>
-      <Text>Chat</Text>
+      <Chat />
     </View>
   );
 };
