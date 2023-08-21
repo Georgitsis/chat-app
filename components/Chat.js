@@ -1,14 +1,20 @@
 import { useState, useEffect } from "react";
 import { GiftedChat, Bubble } from "react-native-gifted-chat";
 import { StyleSheet, View, KeyboardAvoidingView } from "react-native";
+import {
+  collection,
+  getDocs,
+  addDoc,
+  onSnapshot,
+  query,
+  orderBy,
+} from "firebase/firestore";
 
-const Chat = () => {
+const Chat = ({ db, userId, name }) => {
   const [messages, setMessages] = useState([]);
 
   const onSend = (newMessages) => {
-    setMessages((previousMessages) =>
-      GiftedChat.append(previousMessages, newMessages)
-    );
+    addDoc(collection(db, "messages"), newMessages[0]);
   };
 
   const renderBubble = (props) => {
@@ -28,24 +34,23 @@ const Chat = () => {
   };
 
   useEffect(() => {
-    setMessages([
-      {
-        _id: 1,
-        text: "Hello developer",
-        createdAt: new Date(),
-        user: {
-          _id: 2,
-          name: "React Native",
-          avatar: "https://placeimg.com/140/140/any",
-        },
-      },
-      {
-        _id: 2,
-        text: "This is a system message",
-        createdAt: new Date(),
-        system: true,
-      },
-    ]);
+    const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
+    const unSubMessages = onSnapshot(q, (documentsSnapshot) => {
+      let fetchedMessages = [];
+      documentsSnapshot.forEach((message) => {
+        const createdAtTimestamp = message.data().createdAt; // Assuming createdAt is the Timestamp field
+        const createdAtDate = createdAtTimestamp.toDate(); // Convert Timestamp to Date
+        fetchedMessages.push({
+          _id: message.id,
+          ...message.data(),
+          createdAt: createdAtDate,
+        });
+      });
+      setMessages(fetchedMessages);
+    });
+    return () => {
+      if (unSubMessages) unSubMessages();
+    };
   }, []);
 
   return (
@@ -55,7 +60,8 @@ const Chat = () => {
         renderBubble={renderBubble}
         onSend={(messages) => onSend(messages)}
         user={{
-          _id: 1,
+          _id: userId,
+          name: name,
         }}
       />
       {Platform.OS === "android" ? (

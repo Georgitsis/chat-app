@@ -2,13 +2,14 @@ import {
   StyleSheet,
   View,
   Text,
-  Button,
   TextInput,
   ImageBackground,
   TouchableOpacity,
   KeyboardAvoidingView,
+  Alert,
 } from "react-native";
 import { useState, useEffect } from "react";
+import { getAuth, signInAnonymously } from "firebase/auth";
 
 const Screen1 = ({ navigation }) => {
   const [name, setName] = useState("");
@@ -19,9 +20,27 @@ const Screen1 = ({ navigation }) => {
     "#B9C6AE",
   ]);
   const [backgroundColorChoice, setBackgroundColorChoice] = useState("");
+
+  const auth = getAuth();
+
+  const signInUser = () => {
+    signInAnonymously(auth)
+      .then((result) => {
+        navigation.navigate("Screen2", {
+          userId: result.user.uid,
+          name: name,
+          backgroundColor: backgroundColorChoice,
+        });
+        Alert.alert("Signed in Successfully!");
+      })
+      .catch((error) => {
+        Alert.alert("Unable to sign in, try later again.");
+      });
+  };
+
   return (
     <ImageBackground
-      source={require("../assets/img/backgroundImage.png")} // Replace with your image source
+      source={require("../assets/img/backgroundImage.png")}
       style={styles.background}
     >
       <View style={styles.container}>
@@ -49,12 +68,7 @@ const Screen1 = ({ navigation }) => {
           </View>
           <TouchableOpacity
             style={styles.button} // Add a style for the TouchableOpacity
-            onPress={() =>
-              navigation.navigate("Screen2", {
-                name: name,
-                backgroundColor: backgroundColorChoice,
-              })
-            }
+            onPress={() => signInUser()}
           >
             <Text style={styles.buttonText}>Start Chatting</Text>
           </TouchableOpacity>
@@ -86,13 +100,9 @@ const styles = StyleSheet.create({
     padding: "6%",
   },
   textInput: {
-    //position: "absolute",
-    //top: "5%",
     width: "100%",
     padding: 15,
     borderWidth: 1,
-    //marginTop: 15,
-    //marginBottom: 15,
   },
   background: {
     flex: 1,
@@ -114,7 +124,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between", // You can adjust this based on your needs
     alignItems: "center", // Align items vertically within the container
     marginTop: 10,
-    //marginBottom: 20,
     width: "100%",
   },
   colorButton: {
@@ -128,8 +137,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#555",
-    //position: "absolute",
-    //bottom: "5%",
   },
   buttonText: {
     color: "#FFFFFF",
