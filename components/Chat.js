@@ -47,9 +47,9 @@ const Chat = ({ route, navigation, db, isConnected }) => {
     }
   };
 
-  const loadCachedLists = async () => {
+  const loadCachedMessages = async () => {
     const cachedMessages = (await AsyncStorage.getItem("messages")) || [];
-    setLists(JSON.parse(cachedMessages));
+    setMessages(JSON.parse(cachedMessages));
   };
 
   let unSubMessages;
@@ -74,7 +74,7 @@ const Chat = ({ route, navigation, db, isConnected }) => {
         cacheMessages(fetchedMessages);
         setMessages(fetchedMessages);
       });
-    } else loadCachedLists();
+    } else loadCachedMessages();
     return () => {
       if (unSubMessages) unSubMessages();
     };
