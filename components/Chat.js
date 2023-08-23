@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { GiftedChat, Bubble } from "react-native-gifted-chat";
-import { StyleSheet, View, KeyboardAvoidingView } from "react-native";
+import { StyleSheet, View, KeyboardAvoidingView, Alert } from "react-native";
 import {
   collection,
   getDocs,
@@ -10,9 +10,9 @@ import {
   orderBy,
 } from "firebase/firestore";
 
-const Chat = ({ db, userId, name }) => {
+const Chat = ({ route, navigation, db }) => {
   const [messages, setMessages] = useState([]);
-
+  const { name, backgroundColor, userId } = route.params;
   const onSend = (newMessages) => {
     addDoc(collection(db, "messages"), newMessages[0]);
   };
@@ -34,6 +34,7 @@ const Chat = ({ db, userId, name }) => {
   };
 
   useEffect(() => {
+    navigation.setOptions({ title: name });
     const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
     const unSubMessages = onSnapshot(q, (documentsSnapshot) => {
       let fetchedMessages = [];
@@ -49,12 +50,13 @@ const Chat = ({ db, userId, name }) => {
       setMessages(fetchedMessages);
     });
     return () => {
+      //Alert.alert("unmounting");
       if (unSubMessages) unSubMessages();
     };
   }, []);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: backgroundColor }]}>
       <GiftedChat
         messages={messages}
         renderBubble={renderBubble}

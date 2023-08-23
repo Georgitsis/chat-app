@@ -3,8 +3,7 @@ import { useEffect } from "react";
 import Chat from "./Chat";
 
 const Screen2 = ({ route, navigation, db }) => {
-  const { name } = route.params;
-  const { backgroundColor } = route.params;
+  const { name, backgroundColor } = route.params;
 
   useEffect(() => {
     navigation.setOptions({ title: name });

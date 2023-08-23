@@ -11,7 +11,7 @@ import {
 import { useState, useEffect } from "react";
 import { getAuth, signInAnonymously } from "firebase/auth";
 
-const Screen1 = ({ navigation }) => {
+const Login = ({ navigation }) => {
   const [name, setName] = useState("");
   const [backgroundColorOptions, setBackgroundColorOptions] = useState([
     "#090C08",
@@ -26,7 +26,7 @@ const Screen1 = ({ navigation }) => {
   const signInUser = () => {
     signInAnonymously(auth)
       .then((result) => {
-        navigation.navigate("Screen2", {
+        navigation.navigate("Chat", {
           userId: result.user.uid,
           name: name,
           backgroundColor: backgroundColorChoice,
@@ -143,4 +143,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Screen1;
+export default Login;

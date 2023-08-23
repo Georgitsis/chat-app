@@ -1,6 +1,6 @@
 // import the screens
-import Screen1 from "./components/Screen1";
-import Screen2 from "./components/Screen2";
+import Login from "./components/Login";
+import Chat from "./components/Chat";
 
 // import react Navigation
 import { NavigationContainer } from "@react-navigation/native";
@@ -25,10 +25,10 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Screen1">
-        <Stack.Screen name="Screen1" component={Screen1} />
-        <Stack.Screen name="Screen2">
-          {(props) => <Screen2 db={db} {...props} />}
+      <Stack.Navigator initialRouteName="Login">
+        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="Chat">
+          {(props) => <Chat db={db} {...props} />}
         </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
