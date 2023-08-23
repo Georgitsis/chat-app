@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { GiftedChat, Bubble } from "react-native-gifted-chat";
-import { StyleSheet, View, KeyboardAvoidingView, Alert } from "react-native";
+import { GiftedChat, Bubble, InputToolbar } from "react-native-gifted-chat";
+import { StyleSheet, View, KeyboardAvoidingView } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   collection,
   getDocs,
@@ -10,7 +11,7 @@ import {
   orderBy,
 } from "firebase/firestore";
 
-const Chat = ({ route, navigation, db }) => {
+const Chat = ({ route, navigation, db, isConnected }) => {
   const [messages, setMessages] = useState([]);
   const { name, backgroundColor, userId } = route.params;
   const onSend = (newMessages) => {
@@ -33,33 +34,58 @@ const Chat = ({ route, navigation, db }) => {
     );
   };
 
+  const renderInputToolbar = (props) => {
+    if (isConnected) return <InputToolbar {...props} />;
+    else return null;
+  };
+
+  const cacheMessages = async (messages) => {
+    try {
+      await AsyncStorage.setItem("messages", JSON.stringify(messages));
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const loadCachedLists = async () => {
+    const cachedMessages = (await AsyncStorage.getItem("messages")) || [];
+    setLists(JSON.parse(cachedLists));
+  };
+
+  let unSubMessages;
+
   useEffect(() => {
     navigation.setOptions({ title: name });
-    const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
-    const unSubMessages = onSnapshot(q, (documentsSnapshot) => {
-      let fetchedMessages = [];
-      documentsSnapshot.forEach((message) => {
-        const createdAtTimestamp = message.data().createdAt; // Assuming createdAt is the Timestamp field
-        const createdAtDate = createdAtTimestamp.toDate(); // Convert Timestamp to Date
-        fetchedMessages.push({
-          _id: message.id,
-          ...message.data(),
-          createdAt: createdAtDate,
+    if (isConnected === true) {
+      if (unSubMessages) unSubMessages();
+      unSubMessages = null;
+      const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
+      unSubMessages = onSnapshot(q, (documentsSnapshot) => {
+        let fetchedMessages = [];
+        documentsSnapshot.forEach((message) => {
+          const createdAtTimestamp = message.data().createdAt; // Assuming createdAt is the Timestamp field
+          const createdAtDate = createdAtTimestamp.toDate(); // Convert Timestamp to Date
+          fetchedMessages.push({
+            _id: message.id,
+            ...message.data(),
+            createdAt: createdAtDate,
+          });
         });
+        cacheMessages(fetchedMessages);
+        setMessages(fetchedMessages);
       });
-      setMessages(fetchedMessages);
-    });
+    } else loadCachedLists();
     return () => {
-      //Alert.alert("unmounting");
       if (unSubMessages) unSubMessages();
     };
-  }, []);
+  }, [isConnected]);
 
   return (
     <View style={[styles.container, { backgroundColor: backgroundColor }]}>
       <GiftedChat
         messages={messages}
         renderBubble={renderBubble}
+        renderInputToolbar={renderInputToolbar}
         onSend={(messages) => onSend(messages)}
         user={{
           _id: userId,
