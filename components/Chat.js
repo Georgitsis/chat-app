@@ -49,7 +49,7 @@ const Chat = ({ route, navigation, db, isConnected }) => {
 
   const loadCachedLists = async () => {
     const cachedMessages = (await AsyncStorage.getItem("messages")) || [];
-    setLists(JSON.parse(cachedLists));
+    setLists(JSON.parse(cachedMessages));
   };
 
   let unSubMessages;
