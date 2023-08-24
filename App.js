@@ -19,6 +19,7 @@ import { useEffect } from "react";
 
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Alert } from "react-native";
+import { getStorage } from "firebase/storage";
 
 // Create the navigator
 const Stack = createNativeStackNavigator();
@@ -29,6 +30,7 @@ export default function App() {
 
   // Initialize Cloud Firestore and get a reference to the service
   const db = getFirestore(app);
+  const storage = getStorage(app);
 
   //true if connected
   const connectionStatus = useNetInfo();
