@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { GiftedChat, Bubble, InputToolbar } from "react-native-gifted-chat";
 import { StyleSheet, View, KeyboardAvoidingView } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import CustomActions from "./CustomActions";
 import {
   collection,
   addDoc,
@@ -51,6 +52,10 @@ const Chat = ({ route, navigation, db, isConnected }) => {
     setMessages(JSON.parse(cachedMessages));
   };
 
+  const renderCustomActions = (props) => {
+    return <CustomActions {...props} />;
+  };
+
   let unSubMessages;
 
   useEffect(() => {
@@ -85,6 +90,7 @@ const Chat = ({ route, navigation, db, isConnected }) => {
         messages={messages}
         renderBubble={renderBubble}
         renderInputToolbar={renderInputToolbar}
+        renderActions={renderCustomActions}
         onSend={(messages) => onSend(messages)}
         user={{
           _id: userId,
