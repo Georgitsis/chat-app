@@ -20,6 +20,7 @@ const Chat = ({ route, navigation, db, isConnected, storage }) => {
     addDoc(collection(db, "messages"), newMessages[0]);
   };
 
+  // Customize chat bubbles
   const renderBubble = (props) => {
     return (
       <Bubble
@@ -87,8 +88,8 @@ const Chat = ({ route, navigation, db, isConnected, storage }) => {
       unSubMessages = onSnapshot(q, (documentsSnapshot) => {
         let fetchedMessages = [];
         documentsSnapshot.forEach((message) => {
-          const createdAtTimestamp = message.data().createdAt; // Assuming createdAt is the Timestamp field
-          const createdAtDate = createdAtTimestamp.toDate(); // Convert Timestamp to Date
+          const createdAtTimestamp = message.data().createdAt;
+          const createdAtDate = createdAtTimestamp.toDate();
           fetchedMessages.push({
             _id: message.id,
             ...message.data(),
@@ -128,7 +129,7 @@ const Chat = ({ route, navigation, db, isConnected, storage }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: "100%", // Set the width to 100%
+    width: "100%",
   },
 });
 

@@ -90,11 +90,9 @@ const CustomActions = ({
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.onload = function () {
-        // Obtain the Blob after loading the data
         resolve(xhr.response);
       };
       xhr.onerror = function () {
-        // Handle any error
         reject(new Error("Failed to convert URI to Blob"));
       };
       xhr.responseType = "blob";

@@ -8,14 +8,14 @@ import {
   KeyboardAvoidingView,
   Alert,
 } from "react-native";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { getAuth, signInAnonymously } from "firebase/auth";
 
 const Login = ({ navigation }) => {
   const [name, setName] = useState("");
   const [backgroundColorOptions, setBackgroundColorOptions] = useState([
-    "#090C08",
-    "#474056",
+    "#d1c2a3",
+    "#E0E8F9",
     "#8A95A5",
     "#B9C6AE",
   ]);
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
   },
   background: {
     flex: 1,
-    resizeMode: "cover", // or 'stretch' or 'contain'
+    resizeMode: "cover",
   },
   appTitle: {
     position: "absolute",
@@ -121,8 +121,8 @@ const styles = StyleSheet.create({
   },
   colorButtonGroup: {
     flexDirection: "row",
-    justifyContent: "space-between", // You can adjust this based on your needs
-    alignItems: "center", // Align items vertically within the container
+    justifyContent: "space-between",
+    alignItems: "center",
     marginTop: 10,
     width: "100%",
   },
