@@ -1,9 +1,16 @@
 import { TouchableOpacity, StyleSheet, View, Text } from "react-native";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import { useActionSheet } from "@expo/react-native-action-sheet";
 
-const CustomActions = ({ wrapperStyle, iconTextStyle, onSend }) => {
+const CustomActions = ({
+  wrapperStyle,
+  iconTextStyle,
+  onSend,
+  storage,
+  userID,
+}) => {
   const actionSheet = useActionSheet();
   const onActionPress = () => {
     const options = [
@@ -47,6 +54,59 @@ const CustomActions = ({ wrapperStyle, iconTextStyle, onSend }) => {
         });
       } else Alert.alert("Error occurred while fetching location");
     } else Alert.alert("Permissions haven't been granted.");
+  };
+
+  const pickImage = async () => {
+    let permissions = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (permissions?.granted) {
+      let result = await ImagePicker.launchImageLibraryAsync();
+      if (!result.canceled) {
+        const imageUri = result.assets[0].uri;
+        uploadAndSendImage(imageUri);
+      } else Alert.alert("Permissions haven't been granted.");
+    }
+  };
+
+  const takePhoto = async () => {
+    let permissions = await ImagePicker.requestCameraPermissionsAsync();
+    if (permissions?.granted) {
+      let result = await ImagePicker.launchCameraAsync();
+      if (!result.canceled) await uploadAndSendImage(result.assets[0].uri);
+      else Alert.alert("Permissions haven't been granted.");
+    }
+  };
+
+  const uploadAndSendImage = async (imageUri) => {
+    const blob = await uriToBlob(imageUri);
+    const newUploadRef = ref(storage, generateReference(imageUri));
+    uploadBytes(newUploadRef, blob).then(async (snapshot) => {
+      console.log("File has been uploaded successfully");
+      const imageUrl = await getDownloadURL(snapshot.ref);
+      onSend({ image: imageUrl });
+    });
+  };
+
+  const uriToBlob = async (uri) => {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function () {
+        // Obtain the Blob after loading the data
+        resolve(xhr.response);
+      };
+      xhr.onerror = function () {
+        // Handle any error
+        reject(new Error("Failed to convert URI to Blob"));
+      };
+      xhr.responseType = "blob";
+      xhr.open("GET", uri, true);
+      xhr.send(null);
+    });
+  };
+
+  const generateReference = (uri) => {
+    const timeStamp = new Date().getTime();
+    const imageName = uri.split("/")[uri.split("/").length - 1];
+    return `${userID}-${timeStamp}-${imageName}`;
   };
 
   return (
